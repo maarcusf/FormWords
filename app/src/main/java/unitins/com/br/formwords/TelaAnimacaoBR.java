@@ -4,6 +4,8 @@ package unitins.com.br.formwords;
  * Created by mvini on 04/03/2017.
  */
 
+import android.content.Context;
+
 import unitins.com.br.formwords.AndGraph.AGGameManager;
 import unitins.com.br.formwords.AndGraph.AGInputManager;
 import unitins.com.br.formwords.AndGraph.AGScene;
@@ -19,9 +21,12 @@ import java.util.Random;
 
 public class TelaAnimacaoBR extends AGScene {
 
+
+
     // atributos da classe
     AGSprite alfabeto = null;
     ArrayList<AGSprite>vetorObjetos = null;
+    ArrayList<AGSprite>vetorPalavra = null;
     AGTimer apresentacao;
     //contadores de ponto
     AGSprite[] placar = null;
@@ -52,6 +57,13 @@ public class TelaAnimacaoBR extends AGScene {
     int tempo;
     int cont;
 
+    //Indicar quantas vezes já chamou a função para formar palavras
+    int formacaoPalavras;
+
+    String[] possibilidades = {"a", "b", "c", "d", "e", "f", "g",
+            "h", "i", "j", "k", "l", "m", "n",
+            "o", "p", "q", "r", "s", "t", "u",
+            "v", "w", "x", "y", "z"};
 
     TelaAnimacaoBR(AGGameManager gerenciador){
 
@@ -96,6 +108,8 @@ public class TelaAnimacaoBR extends AGScene {
         //  INSTANCIA UM ARRAYDE OBJETOS DO TIPO AGSPRITE
         vetorObjetos = new ArrayList<AGSprite>();
 
+        vetorPalavra = new ArrayList<AGSprite>();
+        formacaoPalavras = 0;
 
         //CRIA OS PLACARES
         criarMarcadores();
@@ -223,26 +237,12 @@ public class TelaAnimacaoBR extends AGScene {
 
     public void criaLetra() {
 
-
-       /* for (AGSprite reciclado : vetorObjetos) {
-            if (reciclado.bRecycled) {
-                reciclado.vrPosition.setXY(posicao.getX(), posicao.getY());
-                reciclado.bRecycled = false;
-                return;
-            }
-
-        }*/
-
-
         /**
          * ************* FAZER O SORTEIO DAS LETRAS DE ACORDO COM OS RESULTADOS DAS MAIS EXISTENTES ****************
          */
 
         Random r = new Random();
-        String[] possibilidades = {"a", "b", "c", "d", "e", "f", "g",
-                "h", "i", "j", "k", "l", "m", "n",
-                "o", "p", "q", "r", "s", "t", "u",
-                "v", "w", "x", "y", "z"};
+
         double[] probabilidades = {0.131386808, 0.018196808, 0.053796808, 0.041216808, 0.091656808,
                 0.016376808, 0.020126808, 0.005279808, 0.086376808, 0.007176808, 0.005856808,
                 0.040326808, 0.033366808, 0.054046808, 0.095636808, 0.027706808, 0.008216808,
@@ -279,6 +279,39 @@ public class TelaAnimacaoBR extends AGScene {
         }
     }
 
+    //FORMAR PALAVRAS - ESSA AQUI VAI SER MAIS COMPLICADINHA.
+    public void formarPalavra(int numPalavra)
+    {
+        //É preciso setar as posições horizontais e verticais.
+        float[] positionHorizontal =
+                {0.2f, 0.4f, 0.6f, 0.8f,
+                1.0f, 1.2f, 1.4f, 1.6f,
+                1.8f, 2.0f};
+
+      /*  float[] positionVertical =
+                {1.7f, 1.7f, 1.7f, 1.7f,
+                 1.7f, 1.7f, 1.7f, 1.7f,
+                 1.7f, 1.7f};
+*/
+
+            alfabeto = createSprite(R.drawable.alphabet2, 7,8);
+            alfabeto.setScreenPercent(14, 7);
+            alfabeto.vrPosition.setXY(AGScreenManager.iScreenWidth/2*(positionHorizontal[formacaoPalavras]),
+                    AGScreenManager.iScreenHeight/2*(1.7f));
+            alfabeto.addAnimation(1, false, numPalavra);
+            vetorPalavra.add(alfabeto);
+
+           formacaoPalavras++;
+
+    }
+
+    public void confirmarPalavra()
+    {
+
+    }
+
+
+
     // metodo destinado a atualizar os objetos na tela
     public void atualizaObjetos(){
 
@@ -287,7 +320,7 @@ public class TelaAnimacaoBR extends AGScene {
             // move o gato
            //alfabeto.vrPosition.setX(alfabeto.vrPosition.getX()+20);
 
-            // verifica se ele saiu da  tela
+                // verifica se ele saiu da  tela
             if(alfabeto.vrPosition.getX() > AGScreenManager.iScreenWidth +
                     alfabeto.getSpriteWidth()/2){
 
@@ -332,17 +365,38 @@ public class TelaAnimacaoBR extends AGScene {
 
         if(AGInputManager.vrTouchEvents.backButtonClicked()){
             inicia = 0;
+            formacaoPalavras =0;
             vrGameManager.setCurrentScene(1);
             return;
         }
 
         atualizaMarcadores();
-
-        /*if(AGInputManager.vrTouchEvents.screenClicked())
-        {
-        }
-*/
         atualizaObjetos();
+
+        //Para saber qual letra foi clicada, pega pelo frame dela.
+        if (AGInputManager.vrTouchEvents.screenClicked()){
+
+
+            int letra = 0;
+
+            for (int aux = 0; aux < 16; aux ++){
+
+                if(formacaoPalavras >=9){
+                    System.out.println("Foi atingido o número máximo de palavras...");
+                    break;
+                }
+
+                letra = vetorObjetos.get(aux).getCurrentAnimationFrame();
+
+                if(vetorObjetos.get(aux).collide(AGInputManager.vrTouchEvents.getLastPosition()))
+                {
+                    System.out.println("indice letra alfabeto:" +letra);
+                    System.out.println("\n Letra: "+ possibilidades[letra]);
+                    formarPalavra(letra);
+                }
+            }
+        }
+
         //atualizaPlacar();
 
         /*if(placar[0].collide(placar[1])){

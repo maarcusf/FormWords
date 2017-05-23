@@ -25,6 +25,11 @@ public class TelaAnimacaoBR extends AGScene {
 
     // atributos da classe
     AGSprite alfabeto = null;
+
+    AGSprite btCancel = null;
+    AGSprite btConfirm = null;
+
+
     ArrayList<AGSprite>vetorObjetos = null;
     ArrayList<AGSprite>vetorPalavra = null;
     AGTimer apresentacao;
@@ -103,7 +108,7 @@ public class TelaAnimacaoBR extends AGScene {
          */
 
         // configura a cor da cena de menu para azul
-        this.setSceneBackgroundColor(0,0,0);
+        this.setSceneBackgroundColor(0,1,1);
 
         //  INSTANCIA UM ARRAYDE OBJETOS DO TIPO AGSPRITE
         vetorObjetos = new ArrayList<AGSprite>();
@@ -250,14 +255,14 @@ public class TelaAnimacaoBR extends AGScene {
                 0.007796808, 0.004596808, 0.009136808};
 
         float[] positionHorizontal = {0.2f, 0.7f, 1.2f, 1.7f,
-                                      0.2f, 0.7f, 1.2f, 1.7f,
-                                      0.2f, 0.7f, 1.2f, 1.7f,
-                                      0.2f, 0.7f, 1.2f, 1.7f};
+                0.2f, 0.7f, 1.2f, 1.7f,
+                0.2f, 0.7f, 1.2f, 1.7f,
+                0.2f, 0.7f, 1.2f, 1.7f};
 
         float[] positionVertical = {1, 1, 1, 1,
-                                    0.75f, 0.75f, 0.75f, 0.75f,
-                                    0.5f, 0.5f, 0.5f, 0.5f,
-                                    0.25f, 0.25f, 0.25f, 0.25f};
+                0.75f, 0.75f, 0.75f, 0.75f,
+                0.5f, 0.5f, 0.5f, 0.5f,
+                0.25f, 0.25f, 0.25f, 0.25f};
 
         int sorteios = 16;
 
@@ -285,8 +290,8 @@ public class TelaAnimacaoBR extends AGScene {
         //É preciso setar as posições horizontais e verticais.
         float[] positionHorizontal =
                 {0.2f, 0.4f, 0.6f, 0.8f,
-                1.0f, 1.2f, 1.4f, 1.6f,
-                1.8f, 2.0f};
+                        1.0f, 1.2f, 1.4f, 1.6f,
+                        1.8f, 2.0f};
 
       /*  float[] positionVertical =
                 {1.7f, 1.7f, 1.7f, 1.7f,
@@ -294,14 +299,18 @@ public class TelaAnimacaoBR extends AGScene {
                  1.7f, 1.7f};
 */
 
-            alfabeto = createSprite(R.drawable.alphabet2, 7,8);
-            alfabeto.setScreenPercent(14, 7);
-            alfabeto.vrPosition.setXY(AGScreenManager.iScreenWidth/2*(positionHorizontal[formacaoPalavras]),
-                    AGScreenManager.iScreenHeight/2*(1.7f));
-            alfabeto.addAnimation(1, false, numPalavra);
-            vetorPalavra.add(alfabeto);
+        alfabeto = createSprite(R.drawable.alphabet2, 7,8);
+        alfabeto.setScreenPercent(14, 7);
+        alfabeto.vrPosition.setXY(AGScreenManager.iScreenWidth/2*(positionHorizontal[formacaoPalavras]),
+                AGScreenManager.iScreenHeight/2*(1.7f));
+        alfabeto.addAnimation(1, false, numPalavra);
+        vetorPalavra.add(alfabeto);
 
-           formacaoPalavras++;
+        formacaoPalavras++;
+        if(formacaoPalavras == 1)
+        {
+            criaBtCancelConfirm();
+        }
 
     }
 
@@ -318,9 +327,9 @@ public class TelaAnimacaoBR extends AGScene {
         for(AGSprite alfabeto:vetorObjetos)
         {
             // move o gato
-           //alfabeto.vrPosition.setX(alfabeto.vrPosition.getX()+20);
+            //alfabeto.vrPosition.setX(alfabeto.vrPosition.getX()+20);
 
-                // verifica se ele saiu da  tela
+            // verifica se ele saiu da  tela
             if(alfabeto.vrPosition.getX() > AGScreenManager.iScreenWidth +
                     alfabeto.getSpriteWidth()/2){
 
@@ -343,6 +352,19 @@ public class TelaAnimacaoBR extends AGScene {
     public void stop()
     {
 
+    }
+
+    public void criaBtCancelConfirm()
+    {
+        btCancel = createSprite(R.drawable.cancel, 1,1);
+        btCancel.setScreenPercent(18, 9);
+        btCancel.vrPosition.setXY(AGScreenManager.iScreenWidth/2*(0.4f),AGScreenManager.iScreenHeight/2*(1.4f));
+        btCancel.addAnimation(1, false, 1);
+
+        btConfirm = createSprite(R.drawable.confirm, 1,1);
+        btConfirm.setScreenPercent(20, 10);
+        btConfirm.vrPosition.setXY(AGScreenManager.iScreenWidth/2*(1.6f),AGScreenManager.iScreenHeight/2*(1.4f));
+        btConfirm.addAnimation(1, false, 1);
     }
 
     @Override

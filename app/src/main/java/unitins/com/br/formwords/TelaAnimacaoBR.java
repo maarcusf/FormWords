@@ -4,8 +4,6 @@ package unitins.com.br.formwords;
  * Created by mvini on 04/03/2017.
  */
 
-import android.content.Context;
-
 import unitins.com.br.formwords.AndGraph.AGGameManager;
 import unitins.com.br.formwords.AndGraph.AGInputManager;
 import unitins.com.br.formwords.AndGraph.AGScene;
@@ -25,11 +23,12 @@ public class TelaAnimacaoBR extends AGScene {
 
     // atributos da classe
     AGSprite alfabeto = null;
-
+    AGSprite palavra = null;
     AGSprite btCancel = null;
     AGSprite btConfirm = null;
 
 
+    ArrayList<AGSprite>vetorBotao = null;
     ArrayList<AGSprite>vetorObjetos = null;
     ArrayList<AGSprite>vetorPalavra = null;
     AGTimer apresentacao;
@@ -40,6 +39,8 @@ public class TelaAnimacaoBR extends AGScene {
     AGSprite[] rtk = null;
     AGSprite[] cronometro = null;
     int estado;
+
+    Boolean ativo = true;
 
     int inicia = 0;
 
@@ -115,6 +116,9 @@ public class TelaAnimacaoBR extends AGScene {
 
         vetorPalavra = new ArrayList<AGSprite>();
         formacaoPalavras = 0;
+
+        vetorBotao = new ArrayList<AGSprite>();
+
 
         //CRIA OS PLACARES
         criarMarcadores();
@@ -194,6 +198,43 @@ public class TelaAnimacaoBR extends AGScene {
         placar[1].render();
 
     }*/
+
+    //metodo que vai criar os placares
+    private void criarMarcadores() {
+        for (int i = 0; i < placar.length; i++) {
+            placar[i] = createSprite(R.drawable.fonte, 4, 4);
+            placar[i].setScreenPercent(4, 4);
+            placar[i].bAutoRender = false;
+
+            rtk[i] = createSprite(R.drawable.fonte, 4, 4);
+            rtk[i].setScreenPercent(4, 4);
+            rtk[i].bAutoRender = false;
+
+            acert[i] = createSprite(R.drawable.fonte, 4, 4);
+            acert[i].setScreenPercent(4, 4);
+            acert[i].bAutoRender = false;
+
+            err[i] = createSprite(R.drawable.fonte, 4, 4);
+            err[i].setScreenPercent(4, 4);
+            err[i].bAutoRender = false;
+
+            cronometro[i] = createSprite(R.drawable.fonte, 4, 4);
+            cronometro[i].setScreenPercent(4, 4);
+            cronometro[i].bAutoRender = false;
+
+            for (int quadro = 0; quadro < 10; quadro++) {
+                rtk[i].addAnimation(1, true, quadro);
+                placar[i].addAnimation(1, true, quadro);
+                acert[i].addAnimation(1, true, quadro);
+                err[i].addAnimation(1, true, quadro);
+                cronometro[i].addAnimation(1, true, quadro);
+
+            }
+
+
+        }
+
+    }
 
     //metodo ingrato que atualiza os marcadores
     private void atualizaMarcadores() {
@@ -293,24 +334,64 @@ public class TelaAnimacaoBR extends AGScene {
                         1.0f, 1.2f, 1.4f, 1.6f,
                         1.8f, 2.0f};
 
-      /*  float[] positionVertical =
-                {1.7f, 1.7f, 1.7f, 1.7f,
-                 1.7f, 1.7f, 1.7f, 1.7f,
-                 1.7f, 1.7f};
-*/
-
-        alfabeto = createSprite(R.drawable.alphabet2, 7,8);
-        alfabeto.setScreenPercent(14, 7);
-        alfabeto.vrPosition.setXY(AGScreenManager.iScreenWidth/2*(positionHorizontal[formacaoPalavras]),
+        palavra = createSprite(R.drawable.alphabet2, 7,8);
+        palavra.setScreenPercent(14, 7);
+        palavra.vrPosition.setXY(AGScreenManager.iScreenWidth/2*(positionHorizontal[formacaoPalavras]),
                 AGScreenManager.iScreenHeight/2*(1.7f));
-        alfabeto.addAnimation(1, false, numPalavra);
-        vetorPalavra.add(alfabeto);
+        palavra.addAnimation(1, false, numPalavra);
+        vetorPalavra.add(palavra);
 
         formacaoPalavras++;
-        if(formacaoPalavras == 1)
+        if(ativo == true)
         {
             criaBtCancelConfirm();
         }
+
+    }
+
+    public void criaBtCancelConfirm()
+    {
+        btCancel = createSprite(R.drawable.cancel, 1,1);
+        btCancel.setScreenPercent(18, 9);
+        btCancel.vrPosition.setXY(AGScreenManager.iScreenWidth/2*(0.4f),AGScreenManager.iScreenHeight/2*(1.4f));
+        btCancel.addAnimation(1, false, 1);
+        vetorBotao.add(btCancel);
+
+        btConfirm = createSprite(R.drawable.confirm, 1,1);
+        btConfirm.setScreenPercent(20, 10);
+        btConfirm.vrPosition.setXY(AGScreenManager.iScreenWidth/2*(1.6f),AGScreenManager.iScreenHeight/2*(1.4f));
+        btConfirm.addAnimation(1, false, 1);
+        vetorBotao.add(btConfirm);
+
+        ativo = false;
+    }
+
+    public void cancelarPalavra()
+    {
+
+    //   for(AGSprite dd : vetorPalavra)
+       //{
+       // for (int i = 1; i < vetorPalavra.size(); i++)
+        //{
+            System.out.println("Letra cancelada: "+ possibilidades[palavra.getCurrentAnimationFrame()]);
+            System.out.println("Current Animation Frame: -> " + palavra.getCurrentAnimationFrame());
+
+            vetorPalavra.remove(palavra);
+
+            palavra.bRecycled = true;
+            palavra.bVisible = false;
+
+            formacaoPalavras--;
+
+            if(formacaoPalavras < 0)
+            {
+                formacaoPalavras = 0;
+            }
+       // }
+
+
+
+      // }
 
     }
 
@@ -319,14 +400,12 @@ public class TelaAnimacaoBR extends AGScene {
 
     }
 
-
-
     // metodo destinado a atualizar os objetos na tela
     public void atualizaObjetos(){
 
         for(AGSprite alfabeto:vetorObjetos)
         {
-            // move o gato
+
             //alfabeto.vrPosition.setX(alfabeto.vrPosition.getX()+20);
 
             // verifica se ele saiu da  tela
@@ -354,19 +433,6 @@ public class TelaAnimacaoBR extends AGScene {
 
     }
 
-    public void criaBtCancelConfirm()
-    {
-        btCancel = createSprite(R.drawable.cancel, 1,1);
-        btCancel.setScreenPercent(18, 9);
-        btCancel.vrPosition.setXY(AGScreenManager.iScreenWidth/2*(0.4f),AGScreenManager.iScreenHeight/2*(1.4f));
-        btCancel.addAnimation(1, false, 1);
-
-        btConfirm = createSprite(R.drawable.confirm, 1,1);
-        btConfirm.setScreenPercent(20, 10);
-        btConfirm.vrPosition.setXY(AGScreenManager.iScreenWidth/2*(1.6f),AGScreenManager.iScreenHeight/2*(1.4f));
-        btConfirm.addAnimation(1, false, 1);
-    }
-
     @Override
     // chamado x vezes por segundo
     // implementar a logica da cena
@@ -387,7 +453,11 @@ public class TelaAnimacaoBR extends AGScene {
 
         if(AGInputManager.vrTouchEvents.backButtonClicked()){
             inicia = 0;
-            formacaoPalavras =0;
+            formacaoPalavras = 0;
+            vetorObjetos = new ArrayList<AGSprite>();
+            vetorPalavra = new ArrayList<AGSprite>();
+            ativo = true;
+
             vrGameManager.setCurrentScene(1);
             return;
         }
@@ -395,19 +465,14 @@ public class TelaAnimacaoBR extends AGScene {
         atualizaMarcadores();
         atualizaObjetos();
 
-        //Para saber qual letra foi clicada, pega pelo frame dela.
         if (AGInputManager.vrTouchEvents.screenClicked()){
-
-
+            //Para saber qual letra foi clicada, pega pelo frame dela.
             int letra = 0;
-
             for (int aux = 0; aux < 16; aux ++){
-
                 if(formacaoPalavras >=9){
                     System.out.println("Foi atingido o número máximo de palavras...");
                     break;
                 }
-
                 letra = vetorObjetos.get(aux).getCurrentAnimationFrame();
 
                 if(vetorObjetos.get(aux).collide(AGInputManager.vrTouchEvents.getLastPosition()))
@@ -417,6 +482,23 @@ public class TelaAnimacaoBR extends AGScene {
                     formarPalavra(letra);
                 }
             }
+
+            if(formacaoPalavras >= 0)
+            { //Se for clicado nos botões de cancelar ou confirmar.
+                if(vetorBotao.get(0).collide(AGInputManager.vrTouchEvents.getLastPosition()))
+                {
+                    System.out.println("Cancelar clicado...\n");
+                    System.out.printf("Tamanho do vetorPalavra: " + vetorPalavra.size()+"\n");
+                    cancelarPalavra();
+                }
+                else if(vetorBotao.get(1).collide(AGInputManager.vrTouchEvents.getLastPosition()))
+                {
+                    confirmarPalavra();
+
+                }
+            }
+
+
         }
 
         //atualizaPlacar();
@@ -427,44 +509,5 @@ public class TelaAnimacaoBR extends AGScene {
 
         }*/
     }
-
-    //metodo que vai criar os placares
-    private void criarMarcadores() {
-        for (int i = 0; i < placar.length; i++) {
-            placar[i] = createSprite(R.drawable.fonte, 4, 4);
-            placar[i].setScreenPercent(4, 4);
-            placar[i].bAutoRender = false;
-
-            rtk[i] = createSprite(R.drawable.fonte, 4, 4);
-            rtk[i].setScreenPercent(4, 4);
-            rtk[i].bAutoRender = false;
-
-            acert[i] = createSprite(R.drawable.fonte, 4, 4);
-            acert[i].setScreenPercent(4, 4);
-            acert[i].bAutoRender = false;
-
-            err[i] = createSprite(R.drawable.fonte, 4, 4);
-            err[i].setScreenPercent(4, 4);
-            err[i].bAutoRender = false;
-
-            cronometro[i] = createSprite(R.drawable.fonte, 4, 4);
-            cronometro[i].setScreenPercent(4, 4);
-            cronometro[i].bAutoRender = false;
-
-            for (int quadro = 0; quadro < 10; quadro++) {
-                rtk[i].addAnimation(1, true, quadro);
-                placar[i].addAnimation(1, true, quadro);
-                acert[i].addAnimation(1, true, quadro);
-                err[i].addAnimation(1, true, quadro);
-                cronometro[i].addAnimation(1, true, quadro);
-
-            }
-
-
-        }
-
-    }
-
-
 
 }

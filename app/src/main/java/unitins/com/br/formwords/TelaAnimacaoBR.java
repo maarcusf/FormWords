@@ -4,6 +4,9 @@ package unitins.com.br.formwords;
  * Created by mvini on 04/03/2017.
  */
 
+import android.content.Context;
+import android.content.res.AssetManager;
+
 import unitins.com.br.formwords.AndGraph.AGGameManager;
 import unitins.com.br.formwords.AndGraph.AGInputManager;
 import unitins.com.br.formwords.AndGraph.AGScene;
@@ -12,6 +15,12 @@ import unitins.com.br.formwords.AndGraph.AGSprite;
 import unitins.com.br.formwords.AndGraph.AGTimer;
 import unitins.com.br.formwords.AndGraph.AGVector2D;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -70,6 +79,7 @@ public class TelaAnimacaoBR extends AGScene {
             "h", "i", "j", "k", "l", "m", "n",
             "o", "p", "q", "r", "s", "t", "u",
             "v", "w", "x", "y", "z"};
+    private Context resources;
 
     TelaAnimacaoBR(AGGameManager gerenciador){
 
@@ -395,9 +405,64 @@ public class TelaAnimacaoBR extends AGScene {
 
     }
 
-    public void confirmarPalavra()
-    {
+    //Vai procurar no dicionário a existência da palavra
+    public void confirmarPalavra() {
+        String palavraFormada ="";
+        int letra = 0;
+        Boolean existePalavra = null;
 
+        System.out.println("Botão Confirmar Clicado com sucesso!!!!!!!!!\n");
+
+        System.out.println("Vetor palavras formadas contém: "+ vetorPalavra.size()+"\n");
+
+        for(int i = 0; i < vetorPalavra.size(); i++)
+        {
+            letra = vetorPalavra.get(i).getCurrentAnimationFrame();
+            System.out.println("Quais IDs: "+ letra);
+            System.out.println("As letras são: "+ possibilidades[letra]);
+
+            palavraFormada += possibilidades[letra];
+        }
+
+        System.out.println("\nPalavra formada: " +palavraFormada);
+
+        try {
+            existePalavra = procurarPalavraDicionario(palavraFormada);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if(existePalavra == true)
+        {
+            System.out.println("\nExiste a palavra... ");
+        }
+        else
+        {
+            System.out.println("\nNão existe a palavra...");
+        }
+
+    }
+
+    //Procurar Palavra no dicionário
+    public boolean procurarPalavraDicionario(String palavra) throws IOException {
+        Context vrContexto = this.resources;
+
+        String linha="";
+        FileReader vrFile = new FileReader(vrContexto.getFilesDir().getPath()+"/dicionario.txt");
+        BufferedReader reader = new BufferedReader(vrFile);
+
+
+        while ((linha = reader.readLine()) != null) {
+            if(linha.contains(palavra)){
+                return true;
+            }
+            else {
+
+                return false;
+            }
+        }
+
+        return false;
     }
 
     // metodo destinado a atualizar os objetos na tela
@@ -436,8 +501,7 @@ public class TelaAnimacaoBR extends AGScene {
     @Override
     // chamado x vezes por segundo
     // implementar a logica da cena
-    public void loop()
-    {
+    public void loop(){
         apresentacao.update();
 
         if(inicia == 0){
@@ -493,7 +557,11 @@ public class TelaAnimacaoBR extends AGScene {
                 }
                 else if(vetorBotao.get(1).collide(AGInputManager.vrTouchEvents.getLastPosition()))
                 {
-                    confirmarPalavra();
+                    if(vetorPalavra.size()>0)
+                    {
+                        confirmarPalavra();
+                    }
+
 
                 }
             }

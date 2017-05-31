@@ -5,7 +5,6 @@ package unitins.com.br.formwords;
  */
 
 import android.content.Context;
-import android.content.res.AssetManager;
 
 import unitins.com.br.formwords.AndGraph.AGGameManager;
 import unitins.com.br.formwords.AndGraph.AGInputManager;
@@ -13,17 +12,12 @@ import unitins.com.br.formwords.AndGraph.AGScene;
 import unitins.com.br.formwords.AndGraph.AGScreenManager;
 import unitins.com.br.formwords.AndGraph.AGSprite;
 import unitins.com.br.formwords.AndGraph.AGTimer;
-import unitins.com.br.formwords.AndGraph.AGVector2D;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 
 public class TelaAnimacaoBR extends AGScene {
@@ -82,8 +76,8 @@ public class TelaAnimacaoBR extends AGScene {
     private Context resources;
 
     TelaAnimacaoBR(AGGameManager gerenciador){
-
         super(gerenciador);
+        TelaAnimacaoBR vrContexto = this;
     }
     // chamado sempre que a cena for chamada
     public void init()
@@ -379,30 +373,33 @@ public class TelaAnimacaoBR extends AGScene {
     public void cancelarPalavra()
     {
 
-    //   for(AGSprite dd : vetorPalavra)
-       //{
-       // for (int i = 1; i < vetorPalavra.size(); i++)
-        //{
-            System.out.println("Letra cancelada: "+ possibilidades[palavra.getCurrentAnimationFrame()]);
-            System.out.println("Current Animation Frame: -> " + palavra.getCurrentAnimationFrame());
 
-            vetorPalavra.remove(palavra);
+        System.out.println("Letra cancelada: "+ possibilidades[palavra.getCurrentAnimationFrame()]);
+        System.out.println("Current Animation Frame: -> " + palavra.getCurrentAnimationFrame());
 
-            palavra.bRecycled = true;
-            palavra.bVisible = false;
+        vetorPalavra.remove(vetorPalavra.size()-1);
+        System.out.println("Tamanho do vetorPalavra depois de removido." + vetorPalavra.size());
+
+        //palavra.bRecycled = true;
+        palavra.bVisible = false;
+
+        //Quando não tiver mais palavra pra tirar sai da função, se não remove uma palavra.
+        if(vetorPalavra.size() == 0)
+        {
+            formacaoPalavras = 0;
+            return;
+
+        }
+        else {
+
+            palavra = vetorPalavra.get(vetorPalavra.size() - 1);
 
             formacaoPalavras--;
 
-            if(formacaoPalavras < 0)
-            {
+            if (formacaoPalavras < 0) {
                 formacaoPalavras = 0;
             }
-       // }
-
-
-
-      // }
-
+        }
     }
 
     //Vai procurar no dicionário a existência da palavra
@@ -424,7 +421,9 @@ public class TelaAnimacaoBR extends AGScene {
             palavraFormada += possibilidades[letra];
         }
 
+        palavraFormada = palavraFormada.toUpperCase();
         System.out.println("\nPalavra formada: " +palavraFormada);
+
 
         try {
             existePalavra = procurarPalavraDicionario(palavraFormada);
@@ -445,20 +444,18 @@ public class TelaAnimacaoBR extends AGScene {
 
     //Procurar Palavra no dicionário
     public boolean procurarPalavraDicionario(String palavra) throws IOException {
-        Context vrContexto = this.resources;
-
+       Context vrContexto = null;
         String linha="";
-        FileReader vrFile = new FileReader(vrContexto.getFilesDir().getPath()+"/dicionario.txt");
+       /* FileReader vrFile = new FileReader("file:///assets/dicionario.txt");
         BufferedReader reader = new BufferedReader(vrFile);
-
+*/
+       InputStream caminho = vrGameManager.vrActivity.getAssets().open("dicionario.txt");
+       InputStreamReader input = new InputStreamReader(caminho);
+       BufferedReader reader = new BufferedReader(input);
 
         while ((linha = reader.readLine()) != null) {
             if(linha.contains(palavra)){
                 return true;
-            }
-            else {
-
-                return false;
             }
         }
 
@@ -530,6 +527,8 @@ public class TelaAnimacaoBR extends AGScene {
         atualizaObjetos();
 
         if (AGInputManager.vrTouchEvents.screenClicked()){
+
+
             //Para saber qual letra foi clicada, pega pelo frame dela.
             int letra = 0;
             for (int aux = 0; aux < 16; aux ++){
@@ -537,7 +536,9 @@ public class TelaAnimacaoBR extends AGScene {
                     System.out.println("Foi atingido o número máximo de palavras...");
                     break;
                 }
+
                 letra = vetorObjetos.get(aux).getCurrentAnimationFrame();
+                System.out.println("Tamanho da letra: " + letra);
 
                 if(vetorObjetos.get(aux).collide(AGInputManager.vrTouchEvents.getLastPosition()))
                 {
@@ -553,6 +554,11 @@ public class TelaAnimacaoBR extends AGScene {
                 {
                     System.out.println("Cancelar clicado...\n");
                     System.out.printf("Tamanho do vetorPalavra: " + vetorPalavra.size()+"\n");
+                    if(vetorPalavra.size() == 0)
+                    {
+                        System.out.println("Tamanho do vetor = 0. Digite uma letra");
+                        return;
+                    }
                     cancelarPalavra();
                 }
                 else if(vetorBotao.get(1).collide(AGInputManager.vrTouchEvents.getLastPosition()))
@@ -577,5 +583,4 @@ public class TelaAnimacaoBR extends AGScene {
 
         }*/
     }
-
 }

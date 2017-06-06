@@ -10,6 +10,7 @@ import unitins.com.br.formwords.AndGraph.AGGameManager;
 import unitins.com.br.formwords.AndGraph.AGInputManager;
 import unitins.com.br.formwords.AndGraph.AGScene;
 import unitins.com.br.formwords.AndGraph.AGScreenManager;
+import unitins.com.br.formwords.AndGraph.AGSoundManager;
 import unitins.com.br.formwords.AndGraph.AGSprite;
 import unitins.com.br.formwords.AndGraph.AGTimer;
 
@@ -66,6 +67,10 @@ public class TelaAnimacaoBR extends AGScene {
     int tempo;
     int cont;
 
+    //Sons de efeito do jogo
+    int errou = 0;
+    int acertou = 0;
+
     //Indicar quantas vezes já chamou a função para formar palavras
     int formacaoPalavras;
 
@@ -91,12 +96,16 @@ public class TelaAnimacaoBR extends AGScene {
         rtk = new AGSprite[4];
         cronometro = new AGSprite[4];
 
+        //Sons do jogo
+        errou = AGSoundManager.vrSoundEffects.loadSoundEffect("errou.mp3");
+        acertou = AGSoundManager.vrSoundEffects.loadSoundEffect("acertou.mp3");
+
         //PEGA O TAMANHO DA TELA
         maxW = AGScreenManager.iScreenWidth;
         maxH = AGScreenManager.iScreenHeight;
 
         //SCORES DO JOGO
-        pontos = 8000;
+        pontos = 0000;
         acertos = 0;
         erros = 0;
         cont = 0;
@@ -274,15 +283,6 @@ public class TelaAnimacaoBR extends AGScene {
 
     }
 
-   /* public void atualizaPlacar(){
-        int tamanhoVetor = vetorObjetos.size();
-        placar[0].setCurrentAnimation(tamanhoVetor/10);
-        placar[1].setCurrentAnimation(tamanhoVetor%10);
-    }*/
-
-
-
-
     // metodo que criar um objeto visual com base em uma posicao
 
     public void criaLetra() {
@@ -372,8 +372,6 @@ public class TelaAnimacaoBR extends AGScene {
 
     public void cancelarPalavra()
     {
-
-
         System.out.println("Letra cancelada: "+ possibilidades[palavra.getCurrentAnimationFrame()]);
         System.out.println("Current Animation Frame: -> " + palavra.getCurrentAnimationFrame());
 
@@ -423,10 +421,15 @@ public class TelaAnimacaoBR extends AGScene {
 
         palavraFormada = palavraFormada.toUpperCase();
         System.out.println("\nPalavra formada: " +palavraFormada);
-
+        int tamanhoPalavra = palavraFormada.length();
 
         try {
             existePalavra = procurarPalavraDicionario(palavraFormada);
+            if (tamanhoPalavra == 1)
+            {
+                existePalavra = false;
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -434,21 +437,85 @@ public class TelaAnimacaoBR extends AGScene {
         if(existePalavra == true)
         {
             System.out.println("\nExiste a palavra... ");
+            System.out.println("Tamanho da palavra: "+ tamanhoPalavra);
+            verfificaPontuacao(tamanhoPalavra);
+            limpaPalavra(tamanhoPalavra);
+            acertos++;
+            AGSoundManager.vrSoundEffects.play(acertou);
+
         }
         else
         {
             System.out.println("\nNão existe a palavra...");
+            erros++;
+            limpaPalavra(tamanhoPalavra);
+
+            AGSoundManager.vrSoundEffects.play(errou);
         }
 
     }
 
+    public void limpaPalavra(int tamanhoPalavra)
+    {
+        for (int posicao = 0; posicao < tamanhoPalavra; posicao++)
+        {
+            vetorPalavra.remove(vetorPalavra.size()-1);
+            System.out.println("Tamanho do vetorPalavra depois de removido." + vetorPalavra.size());
+
+            //palavra.bRecycled = true;
+            palavra.bVisible = false;
+
+            //Quando não tiver mais palavra pra tirar sai da função, se não remove uma palavra.
+            if(vetorPalavra.size() == 0)
+            {
+                formacaoPalavras = 0;
+                return;
+
+            }
+            else {
+
+                palavra = vetorPalavra.get(vetorPalavra.size() - 1);
+
+                formacaoPalavras--;
+
+                if (formacaoPalavras < 0) {
+                    formacaoPalavras = 0;
+                }
+            }
+        }
+    }
+
+    public void verfificaPontuacao(int tamanhoPalavra)
+    {
+        if (tamanhoPalavra == 2)
+        {
+            pontos+=25;
+        }
+        if (tamanhoPalavra == 3)
+        {
+            pontos+=50;
+        }
+        if(tamanhoPalavra == 4)
+        {
+            pontos+=100;
+        }
+        if (tamanhoPalavra==5)
+        {
+            pontos+=200;
+        }
+        if(tamanhoPalavra==5)
+        {
+            pontos+=300;
+        }
+        if (tamanhoPalavra>5)
+        {
+            pontos+=400;
+        }
+    }
+
     //Procurar Palavra no dicionário
     public boolean procurarPalavraDicionario(String palavra) throws IOException {
-       Context vrContexto = null;
-        String linha="";
-       /* FileReader vrFile = new FileReader("file:///assets/dicionario.txt");
-        BufferedReader reader = new BufferedReader(vrFile);
-*/
+       String linha="";
        InputStream caminho = vrGameManager.vrActivity.getAssets().open("dicionario.txt");
        InputStreamReader input = new InputStreamReader(caminho);
        BufferedReader reader = new BufferedReader(input);
@@ -460,25 +527,6 @@ public class TelaAnimacaoBR extends AGScene {
         }
 
         return false;
-    }
-
-    // metodo destinado a atualizar os objetos na tela
-    public void atualizaObjetos(){
-
-        for(AGSprite alfabeto:vetorObjetos)
-        {
-
-            //alfabeto.vrPosition.setX(alfabeto.vrPosition.getX()+20);
-
-            // verifica se ele saiu da  tela
-            if(alfabeto.vrPosition.getX() > AGScreenManager.iScreenWidth +
-                    alfabeto.getSpriteWidth()/2){
-
-                alfabeto.bRecycled = true;
-
-            }
-
-        }
     }
 
     @Override
@@ -524,7 +572,6 @@ public class TelaAnimacaoBR extends AGScene {
         }
 
         atualizaMarcadores();
-        atualizaObjetos();
 
         if (AGInputManager.vrTouchEvents.screenClicked()){
 
@@ -572,15 +619,7 @@ public class TelaAnimacaoBR extends AGScene {
                 }
             }
 
-
         }
 
-        //atualizaPlacar();
-
-        /*if(placar[0].collide(placar[1])){
-
-            placar[1].bVisible = !placar[0].bVisible;
-
-        }*/
     }
 }

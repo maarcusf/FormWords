@@ -112,6 +112,11 @@ public class TelaMenuBR extends AGScene {
                     vrGameManager.setCurrentScene(4);
                     return;
              }
+             if(botaoAjuda.collide(AGInputManager.vrTouchEvents.getLastPosition()))
+             {
+                 vrGameManager.setCurrentScene(7);
+                 return;
+             }
              if(botaoSair.collide(AGInputManager.vrTouchEvents.getLastPosition()))
                 {
 //                AGSoundManager.vrSoundEffects.play(codSom2);

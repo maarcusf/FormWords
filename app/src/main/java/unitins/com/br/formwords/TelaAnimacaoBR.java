@@ -425,7 +425,7 @@ public class TelaAnimacaoBR extends AGScene {
 
         try {
             existePalavra = procurarPalavraDicionario(palavraFormada);
-            if (tamanhoPalavra == 1)
+            if (tamanhoPalavra == 1 || tamanhoPalavra == 2)
             {
                 existePalavra = false;
             }
@@ -487,10 +487,6 @@ public class TelaAnimacaoBR extends AGScene {
 
     public void verfificaPontuacao(int tamanhoPalavra)
     {
-        if (tamanhoPalavra == 2)
-        {
-            pontos+=25;
-        }
         if (tamanhoPalavra == 3)
         {
             pontos+=50;
@@ -503,13 +499,9 @@ public class TelaAnimacaoBR extends AGScene {
         {
             pontos+=200;
         }
-        if(tamanhoPalavra==5)
-        {
-            pontos+=300;
-        }
         if (tamanhoPalavra>5)
         {
-            pontos+=400;
+            pontos+=300;
         }
     }
 

@@ -25,7 +25,8 @@ public class TelaPrincipal extends AGActivityGame
         TelaIdioma idioma = new TelaIdioma(vrManager);
         TelaMenuEUA menuEUA = new TelaMenuEUA(vrManager);
         TelaSobreEUA sobreEUA = new TelaSobreEUA(vrManager);
-
+        TelaAjuda1BR telaAjuda1BR = new TelaAjuda1BR(vrManager);
+        TelaAjuda2BR telaAjuda2BR = new TelaAjuda2BR(vrManager);
 
         //REGISTRA AS CENAS NO REGENTE DE CENAS
         vrManager.addScene(abertura); // RESPONDE PELO INDICE 0
@@ -35,7 +36,8 @@ public class TelaPrincipal extends AGActivityGame
         vrManager.addScene(idioma); //Responde pelo INDICE 4
         vrManager.addScene(menuEUA); //Responde pelo INDICE 5
         vrManager.addScene(sobreEUA); //RESPONDE PELO INDICE 6
-
+        vrManager.addScene(telaAjuda1BR); //RESPONDE PELO ÍNDICE 7
+        vrManager.addScene(telaAjuda2BR); //RESPONDE PELO ÍNDICE 8
 
     }
 }

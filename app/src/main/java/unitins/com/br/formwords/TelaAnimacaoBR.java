@@ -18,6 +18,7 @@ import unitins.com.br.formwords.AndGraph.AGTimer;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -544,7 +545,8 @@ public class TelaAnimacaoBR extends AGScene {
         BufferedReader reader = new BufferedReader(input);
 
         linha = reader.readLine();
-        recordelista = (linha.toString());
+        recordelista = linha;
+
         reader.close();
         input.close();
 
@@ -559,6 +561,15 @@ public class TelaAnimacaoBR extends AGScene {
 
     public void salvaRecorde(int pontuacao) throws IOException {
         int recordeLista =0;
+        FileWriter file = new FileWriter(String.valueOf(vrGameManager.vrActivity.getAssets().open("recorde.txt")));
+        file.write("1");
+
+        System.out.println("vrFile: "+ file);
+
+        file.flush();
+        file.close();
+
+
         recordeLista = lerRecorde();
 
 //Se tiver algum recorde já salvo...
@@ -568,15 +579,20 @@ public class TelaAnimacaoBR extends AGScene {
             if(pontuacao>recordeLista)
             {
                 //SALVA NO ARQUIVO OS PONTOS
-                FileWriter vrFile = new FileWriter(this.vrGameManager.vrActivity.getFilesDir().getPath()+"/recorde.txt", false);
+                FileWriter vrFile = new FileWriter(this.vrGameManager.vrActivity.getFilesDir().getPath()+"/recordes.txt", false);
                 vrFile.write(pontuacao);
+
+                System.out.println("vrFile: "+ vrFile);
 
                 vrFile.flush();
                 vrFile.close();
+            }else
+            {
+                return;
             }
         }else{
             //SALVA NO ARQUIVO OS PONTOS
-            FileWriter vrFile = new FileWriter(this.vrGameManager.vrActivity.getFilesDir().getPath()+"/recorde.txt", false);
+            FileWriter vrFile = new FileWriter(this.vrGameManager.vrActivity.getFilesDir().getPath()+"/recordes.txt", false);
             vrFile.write(pontuacao);
 
             vrFile.flush();
@@ -587,6 +603,7 @@ public class TelaAnimacaoBR extends AGScene {
         //SALVA NO ARQUIVO OS PONTOS.
 
     }
+
 
     @Override
     // chamado quando a aplicaÃ§Ã£o voltar de uma  interrupÃ§Ã£o

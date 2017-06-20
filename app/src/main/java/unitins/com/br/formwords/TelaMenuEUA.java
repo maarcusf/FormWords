@@ -79,7 +79,7 @@ public class TelaMenuEUA extends AGScene
         {
             // verifica se esse toque foi dentro da area do botÃ£o Jogar
             if(botaoJogar.collide(AGInputManager.vrTouchEvents.getLastPosition())){
-                vrGameManager.setCurrentScene(2);
+                vrGameManager.setCurrentScene(11);
                 return;
             }
             if(botaoAjuda.collide(AGInputManager.vrTouchEvents.getLastPosition())){

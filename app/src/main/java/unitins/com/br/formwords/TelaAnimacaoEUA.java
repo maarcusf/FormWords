@@ -1,8 +1,9 @@
 package unitins.com.br.formwords;
 
 /**
- * Created by mvini on 04/03/2017.
+ * Created by marcus on 20/06/17.
  */
+
 
 import android.content.Context;
 import android.widget.Toast;
@@ -25,7 +26,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class TelaAnimacaoBR extends AGScene {
+public class TelaAnimacaoEUA extends AGScene {
 
     // atributos da classe
     AGSprite alfabeto = null;
@@ -89,9 +90,9 @@ public class TelaAnimacaoBR extends AGScene {
             "v", "w", "x", "y", "z"};
     private Context resources;
 
-    TelaAnimacaoBR(AGGameManager gerenciador){
+    TelaAnimacaoEUA(AGGameManager gerenciador){
         super(gerenciador);
-        TelaAnimacaoBR vrContexto = this;
+        TelaAnimacaoEUA vrContexto = this;
     }
     // chamado sempre que a cena for chamada
     public void init()
@@ -408,17 +409,13 @@ public class TelaAnimacaoBR extends AGScene {
             palavraFormada += possibilidades[letra];
         }
 
-        palavraFormada = palavraFormada.toUpperCase();
+        //palavraFormada = palavraFormada.toUpperCase();
 
         System.out.println("\nPalavra formada: " +palavraFormada);
         int tamanhoPalavra = palavraFormada.length();
 
         try {
             existePalavra = procurarPalavraDicionario(palavraFormada);
-            if (tamanhoPalavra == 1 || tamanhoPalavra == 2)
-            {
-                existePalavra = false;
-            }
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -496,11 +493,22 @@ public class TelaAnimacaoBR extends AGScene {
 
     public void verfificaPontuacao(int tamanhoPalavra)
     {
+        if(tamanhoPalavra ==1)
+        {
+            pontos+=10;
+            tempo+=2;
+        }
+        if(tamanhoPalavra ==2)
+        {
+            pontos+=20;
+            tempo+=3;
+        }
+
         if (tamanhoPalavra == 3)
         {
             pontos+=50;
 
-            tempo+=3;
+            tempo+=4;
         }
         if(tamanhoPalavra == 4)
         {
@@ -521,10 +529,10 @@ public class TelaAnimacaoBR extends AGScene {
 
     //Procurar Palavra no dicionário
     public boolean procurarPalavraDicionario(String palavra) throws IOException {
-       String linha="";
-       InputStream caminho = vrGameManager.vrActivity.getAssets().open("dicionario.txt");
-       InputStreamReader input = new InputStreamReader(caminho);
-       BufferedReader reader = new BufferedReader(input);
+        String linha="";
+        InputStream caminho = vrGameManager.vrActivity.getAssets().open("dictionary.txt");
+        InputStreamReader input = new InputStreamReader(caminho);
+        BufferedReader reader = new BufferedReader(input);
 
         while ((linha = reader.readLine()) != null) {
             if(linha.contains(palavra)){
@@ -650,7 +658,7 @@ public class TelaAnimacaoBR extends AGScene {
             vetorPalavra = new ArrayList<AGSprite>();
             ativo = true;
 
-            vrGameManager.setCurrentScene(1);
+            vrGameManager.setCurrentScene(5);
             return;
         }
 

@@ -29,6 +29,7 @@ public class TelaPrincipal extends AGActivityGame
         TelaAjuda2BR telaAjuda2BR = new TelaAjuda2BR(vrManager);
         TelaAjuda1EUA telaAjuda1EUA = new TelaAjuda1EUA(vrManager);
         TelaAjuda2EUA telaAjuda2EUA = new TelaAjuda2EUA(vrManager);
+        TelaAnimacaoEUA telaAnimacaoEUA = new TelaAnimacaoEUA(vrManager);
 
         //REGISTRA AS CENAS NO REGENTE DE CENAS
         vrManager.addScene(abertura); // RESPONDE PELO INDICE 0
@@ -42,6 +43,8 @@ public class TelaPrincipal extends AGActivityGame
         vrManager.addScene(telaAjuda2BR); //RESPONDE PELO ÍNDICE 8
         vrManager.addScene(telaAjuda1EUA); //RESPONDE PELO ÍNDICE 9
         vrManager.addScene(telaAjuda2EUA); //RESPONDE PELO ÍNDICE 10
+        vrManager.addScene(telaAnimacaoEUA); //RESPONDE PELO ÍNDICE 11
+
 
     }
 }

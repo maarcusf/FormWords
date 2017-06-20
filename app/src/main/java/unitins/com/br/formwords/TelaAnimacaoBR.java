@@ -542,22 +542,44 @@ public class TelaAnimacaoBR extends AGScene {
 
         return false;
     }
+    
+    public int lerRecorde() throws IOException {
+        String recordelista = "";
 
-    public void salvaRecorde(int pontos) throws IOException {
+        String linha="";
+        InputStream caminho = vrGameManager.vrActivity.getAssets().open("recorde.txt");
+        InputStreamReader input = new InputStreamReader(caminho);
+        BufferedReader reader = new BufferedReader(input);
 
-        String data = String.valueOf(pontos);
-        String file = "recorde";
-        try {
-            FileOutputStream fOut = vrGameManager.vrActivity.openFileOutput(file,Context.MODE_ENABLE_WRITE_AHEAD_LOGGING);
-            fOut.write(data.getBytes());
-            fOut.close();
-            //Toast.makeText(vrGameManager.vrActivity.getBaseContext(),"Teste",Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        linha = reader.readLine();
+        recordelista = (linha.toString());
+        
+        if (recordelista!=null)
+        {
+            return Integer.parseInt(recordelista);    
         }
+        else {
+            return 0;
+        }
+    }
 
-
+    public void salvaRecorde(int pontuacao) throws IOException {
+        int recordeLista =0;
+        recordeLista = lerRecorde();
+        
+//Se tiver algum recorde já salvo...        
+        if (recordeLista != 0)
+        {
+            //Se a pontuação realizada no jogo for maior que a do recorde
+            if(pontos>recordeLista)
+            {
+                //SALVA NO ARQUIVO OS PONTOS
+            }
+        }
+        //Senão, será a primeira vez que estará salvando o recorde.
+        
+        //SALVA NO ARQUIVO OS PONTOS. 
+                
     }
 
     @Override

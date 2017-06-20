@@ -5,6 +5,7 @@ package unitins.com.br.formwords;
  */
 
 import android.content.Context;
+import android.widget.Toast;
 
 import unitins.com.br.formwords.AndGraph.AGGameManager;
 import unitins.com.br.formwords.AndGraph.AGInputManager;
@@ -15,6 +16,8 @@ import unitins.com.br.formwords.AndGraph.AGSprite;
 import unitins.com.br.formwords.AndGraph.AGTimer;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,8 +25,6 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class TelaAnimacaoBR extends AGScene {
-
-
 
     // atributos da classe
     AGSprite alfabeto = null;
@@ -35,6 +36,8 @@ public class TelaAnimacaoBR extends AGScene {
     ArrayList<AGSprite>vetorBotao = null;
     ArrayList<AGSprite>vetorObjetos = null;
     ArrayList<AGSprite>vetorPalavra = null;
+    ArrayList<String>palavrasFormadas = null;
+
     AGTimer apresentacao;
     //contadores de ponto
     AGSprite[] placar = null;
@@ -45,6 +48,7 @@ public class TelaAnimacaoBR extends AGScene {
     int estado;
 
     Boolean ativo = true;
+    Boolean primeiraVez = true;
 
     int inicia = 0;
 
@@ -70,6 +74,8 @@ public class TelaAnimacaoBR extends AGScene {
     //Sons de efeito do jogo
     int errou = 0;
     int acertou = 0;
+    int palavrarepetida = 0;
+    int acabou = 0;
 
     //Indicar quantas vezes já chamou a função para formar palavras
     int formacaoPalavras;
@@ -99,6 +105,9 @@ public class TelaAnimacaoBR extends AGScene {
         //Sons do jogo
         errou = AGSoundManager.vrSoundEffects.loadSoundEffect("errou.mp3");
         acertou = AGSoundManager.vrSoundEffects.loadSoundEffect("acertou.mp3");
+        palavrarepetida = AGSoundManager.vrSoundEffects.loadSoundEffect("palavrarepetida.mp3");
+        acabou = AGSoundManager.vrSoundEffects.loadSoundEffect("acabou.mp3");
+
 
         //PEGA O TAMANHO DA TELA
         maxW = AGScreenManager.iScreenWidth;
@@ -123,6 +132,8 @@ public class TelaAnimacaoBR extends AGScene {
 
         // configura a cor da cena de menu para azul
         this.setSceneBackgroundColor(0,1,1);
+
+        palavrasFormadas = new ArrayList<String>();
 
         //  INSTANCIA UM ARRAYDE OBJETOS DO TIPO AGSPRITE
         vetorObjetos = new ArrayList<AGSprite>();
@@ -372,11 +383,7 @@ public class TelaAnimacaoBR extends AGScene {
 
     public void cancelarPalavra()
     {
-        System.out.println("Letra cancelada: "+ possibilidades[palavra.getCurrentAnimationFrame()]);
-        System.out.println("Current Animation Frame: -> " + palavra.getCurrentAnimationFrame());
-
         vetorPalavra.remove(vetorPalavra.size()-1);
-        System.out.println("Tamanho do vetorPalavra depois de removido." + vetorPalavra.size());
 
         //palavra.bRecycled = true;
         palavra.bVisible = false;
@@ -413,8 +420,6 @@ public class TelaAnimacaoBR extends AGScene {
         for(int i = 0; i < vetorPalavra.size(); i++)
         {
             letra = vetorPalavra.get(i).getCurrentAnimationFrame();
-            System.out.println("Quais IDs: "+ letra);
-            System.out.println("As letras são: "+ possibilidades[letra]);
 
             palavraFormada += possibilidades[letra];
         }
@@ -434,15 +439,34 @@ public class TelaAnimacaoBR extends AGScene {
             e.printStackTrace();
         }
 
+        //Existe a palavra?
         if(existePalavra == true)
         {
             System.out.println("\nExiste a palavra... ");
-            System.out.println("Tamanho da palavra: "+ tamanhoPalavra);
+            //É A PRIMEIRA PALAVRA A SER FORMADA??
+            if(!primeiraVez)
+            {
+                //percorrer o array para ver se já foi formada a palavra
+                for (int i =0; i < palavrasFormadas.size(); i++) {
+                    if (palavraFormada.equals(palavrasFormadas.get(i).toString())) {
+                        System.out.println("Essa palavra já foi selecionada...");
+                        AGSoundManager.vrSoundEffects.play(palavrarepetida);
+                        limpaPalavra(tamanhoPalavra);
+                        return;
+                    }
+                }
+            }
+
+            //Adiciona em um arrayList as palavras que já foram formadas.
+            palavrasFormadas.add(palavraFormada);
+
+            primeiraVez = false;
+
             verfificaPontuacao(tamanhoPalavra);
             limpaPalavra(tamanhoPalavra);
+            System.out.println("Ainda entrou aqui, não pode entrar........");
             acertos++;
             AGSoundManager.vrSoundEffects.play(acertou);
-
         }
         else
         {
@@ -460,8 +484,6 @@ public class TelaAnimacaoBR extends AGScene {
         for (int posicao = 0; posicao < tamanhoPalavra; posicao++)
         {
             vetorPalavra.remove(vetorPalavra.size()-1);
-            System.out.println("Tamanho do vetorPalavra depois de removido." + vetorPalavra.size());
-
             //palavra.bRecycled = true;
             palavra.bVisible = false;
 
@@ -521,6 +543,23 @@ public class TelaAnimacaoBR extends AGScene {
         return false;
     }
 
+    public void salvaRecorde(int pontos) throws IOException {
+
+        String data = String.valueOf(pontos);
+        String file = "recorde";
+        try {
+            FileOutputStream fOut = vrGameManager.vrActivity.openFileOutput(file,Context.MODE_ENABLE_WRITE_AHEAD_LOGGING);
+            fOut.write(data.getBytes());
+            fOut.close();
+            //Toast.makeText(vrGameManager.vrActivity.getBaseContext(),"Teste",Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+
+    }
+
     @Override
     // chamado quando a aplicaÃ§Ã£o voltar de uma  interrupÃ§Ã£o
     public void restart()
@@ -551,6 +590,23 @@ public class TelaAnimacaoBR extends AGScene {
             apresentacao.restart();
         }
 
+        //Se o tempo acabar, volta para o início.
+        //Salva em um arquivo o recorde
+        if (tempo == 0)
+        {
+            AGSoundManager.vrSoundEffects.play(acabou);
+            try {
+                salvaRecorde(pontos);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            vrGameManager.setCurrentScene(1);
+            return;
+
+        }
+
 
         if(AGInputManager.vrTouchEvents.backButtonClicked()){
             inicia = 0;
@@ -577,12 +633,9 @@ public class TelaAnimacaoBR extends AGScene {
                 }
 
                 letra = vetorObjetos.get(aux).getCurrentAnimationFrame();
-                System.out.println("Tamanho da letra: " + letra);
 
                 if(vetorObjetos.get(aux).collide(AGInputManager.vrTouchEvents.getLastPosition()))
                 {
-                    System.out.println("indice letra alfabeto:" +letra);
-                    System.out.println("\n Letra: "+ possibilidades[letra]);
                     formarPalavra(letra);
                 }
             }
@@ -591,11 +644,8 @@ public class TelaAnimacaoBR extends AGScene {
             { //Se for clicado nos botões de cancelar ou confirmar.
                 if(vetorBotao.get(0).collide(AGInputManager.vrTouchEvents.getLastPosition()))
                 {
-                    System.out.println("Cancelar clicado...\n");
-                    System.out.printf("Tamanho do vetorPalavra: " + vetorPalavra.size()+"\n");
                     if(vetorPalavra.size() == 0)
                     {
-                        System.out.println("Tamanho do vetor = 0. Digite uma letra");
                         return;
                     }
                     cancelarPalavra();

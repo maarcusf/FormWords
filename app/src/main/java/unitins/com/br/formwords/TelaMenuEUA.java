@@ -82,6 +82,10 @@ public class TelaMenuEUA extends AGScene
                 vrGameManager.setCurrentScene(2);
                 return;
             }
+            if(botaoAjuda.collide(AGInputManager.vrTouchEvents.getLastPosition())){
+                vrGameManager.setCurrentScene(9);
+                return;
+            }
             if(botaoSobre.collide(AGInputManager.vrTouchEvents.getLastPosition())){
                 vrGameManager.setCurrentScene(6);
                 return;

@@ -18,6 +18,7 @@ import unitins.com.br.formwords.AndGraph.AGTimer;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -76,6 +77,8 @@ public class TelaAnimacaoBR extends AGScene {
     int acertou = 0;
     int palavrarepetida = 0;
     int acabou = 0;
+    int clickletra = 0;
+    int clickapagar = 0;
 
     //Indicar quantas vezes já chamou a função para formar palavras
     int formacaoPalavras;
@@ -107,6 +110,8 @@ public class TelaAnimacaoBR extends AGScene {
         acertou = AGSoundManager.vrSoundEffects.loadSoundEffect("acertou.mp3");
         palavrarepetida = AGSoundManager.vrSoundEffects.loadSoundEffect("palavrarepetida.mp3");
         acabou = AGSoundManager.vrSoundEffects.loadSoundEffect("acabou.mp3");
+        clickletra = AGSoundManager.vrSoundEffects.loadSoundEffect("clickletra.wav");
+        clickapagar = AGSoundManager.vrSoundEffects.loadSoundEffect("clickapagar.wav");
 
 
         //PEGA O TAMANHO DA TELA
@@ -119,7 +124,7 @@ public class TelaAnimacaoBR extends AGScene {
         erros = 0;
         cont = 0;
         retake = 2;
-        tempo = 60;
+        tempo = 20;
         estado = 0;
         /**
          * valores de identificação do estado do jogo
@@ -355,6 +360,7 @@ public class TelaAnimacaoBR extends AGScene {
                 AGScreenManager.iScreenHeight/2*(1.7f));
         palavra.addAnimation(1, false, numPalavra);
         vetorPalavra.add(palavra);
+        AGSoundManager.vrSoundEffects.play(clickletra);
 
         formacaoPalavras++;
         if(ativo == true)
@@ -383,6 +389,9 @@ public class TelaAnimacaoBR extends AGScene {
 
     public void cancelarPalavra()
     {
+        AGSoundManager.vrSoundEffects.play(clickapagar);
+
+
         vetorPalavra.remove(vetorPalavra.size()-1);
 
         //palavra.bRecycled = true;
@@ -542,7 +551,7 @@ public class TelaAnimacaoBR extends AGScene {
 
         return false;
     }
-    
+
     public int lerRecorde() throws IOException {
         String recordelista = "";
 
@@ -553,10 +562,12 @@ public class TelaAnimacaoBR extends AGScene {
 
         linha = reader.readLine();
         recordelista = (linha.toString());
-        
+        reader.close();
+        input.close();
+
         if (recordelista!=null)
         {
-            return Integer.parseInt(recordelista);    
+            return Integer.parseInt(recordelista);
         }
         else {
             return 0;
@@ -566,20 +577,32 @@ public class TelaAnimacaoBR extends AGScene {
     public void salvaRecorde(int pontuacao) throws IOException {
         int recordeLista =0;
         recordeLista = lerRecorde();
-        
-//Se tiver algum recorde já salvo...        
+
+//Se tiver algum recorde já salvo...
         if (recordeLista != 0)
         {
             //Se a pontuação realizada no jogo for maior que a do recorde
-            if(pontos>recordeLista)
+            if(pontuacao>recordeLista)
             {
                 //SALVA NO ARQUIVO OS PONTOS
+                FileWriter vrFile = new FileWriter(this.vrGameManager.vrActivity.getFilesDir().getPath()+"/recorde.txt", false);
+                vrFile.write(pontuacao);
+
+                vrFile.flush();
+                vrFile.close();
             }
+        }else{
+            //SALVA NO ARQUIVO OS PONTOS
+            FileWriter vrFile = new FileWriter(this.vrGameManager.vrActivity.getFilesDir().getPath()+"/recorde.txt", false);
+            vrFile.write(pontuacao);
+
+            vrFile.flush();
+            vrFile.close();
         }
         //Senão, será a primeira vez que estará salvando o recorde.
-        
-        //SALVA NO ARQUIVO OS PONTOS. 
-                
+
+        //SALVA NO ARQUIVO OS PONTOS.
+
     }
 
     @Override

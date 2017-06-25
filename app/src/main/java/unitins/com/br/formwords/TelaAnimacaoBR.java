@@ -278,11 +278,6 @@ public class TelaAnimacaoBR extends AGScene {
     // metodo que criar um objeto visual com base em uma posicao
 
     public void criaLetra() {
-
-        /**
-         * ************* FAZER O SORTEIO DAS LETRAS DE ACORDO COM OS RESULTADOS DAS MAIS EXISTENTES ****************
-         */
-
         Random r = new Random();
 
         double[] probabilidades = {0.131386808, 0.018196808, 0.053796808, 0.041216808, 0.091656808,
